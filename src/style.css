@@ -1,0 +1,53 @@
+:root {
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+
+    color: #fff;
+    background-color: #414141;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+.title {
+    text-align: center;
+    margin: 1rem auto;
+}
+
+#app {
+    width: max-content;
+    margin: 0 auto;
+}
+
+.btn-group {
+    display: flex;
+    margin: 1rem 0;
+    justify-content: center;
+}
+
+.btn-group > *:not(:last-child) {
+    margin-right: 8px;
+}
+
+.btn {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 0.5rem 0.9rem;
+}
+
+.btn-primary {
+    background-color: #e7e7e7;
+    color: #000;
+}
