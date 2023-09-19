@@ -1,6 +1,7 @@
 import Konva from "konva";
 import { getColor } from "./getColor";
 import type { Board } from "../vite-env";
+import type { Shape } from "konva/lib/Shape";
 
 export const createRectBoard = (datas: Board, size: number) => {
     return datas.map((row, y) => {
@@ -20,7 +21,7 @@ export const createRectBoard = (datas: Board, size: number) => {
                 const isLive = target.attrs.isLive;
                 const [x, y] = target.attrs.coord;
 
-                target.fill(getColor(!isLive));
+                (target as Shape).fill(getColor(!isLive));
                 target.attrs.isLive = !isLive;
                 datas[y][x] = !isLive;
             });
