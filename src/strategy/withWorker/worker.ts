@@ -1,4 +1,4 @@
-import { getCountLifeBox } from "../../helpers";
+import { getCountLifeBox } from "../../helpers/getCountLifeBox";
 import type { Board, Data, SizeBoard } from "../../vite-env";
 
 type WorkerData = {
