@@ -1,39 +1,95 @@
-import Konva from "konva";
-import { createBoard, createRectBoard, appStrategy, strategy } from "./helpers";
+import { getContext, getCanvas } from "./createCanvas";
+import { isLife } from "./helpers/isLife";
+import { rgbaToHex } from "./helpers/rgbaToHex";
+import { createBoard } from "./board/createBoard";
+import { boardRandom } from "./board/boardRandom";
+import { boardUpdate } from "./board/boardUpdate";
+import { drawBoard } from "./board/drawBoard";
+import { updateOnceCell } from "./cell/updateOnceCell";
 
 import "./style.css";
 
-const startElement = document.querySelector<HTMLButtonElement>("#start");
-const clearElement = document.querySelector<HTMLButtonElement>("#clear");
+const startElement = document.querySelector("#start") as HTMLButtonElement;
+const clearElement = document.querySelector("#clear") as HTMLButtonElement;
+const randomElement = document.querySelector("#random") as HTMLButtonElement;
+const stepElement = document.querySelector("#step") as HTMLButtonElement;
+const appElement = document.querySelector<HTMLDivElement>("#app");
 
-if (!startElement || !clearElement) {
-    throw Error("startElement or clearElement not found");
-}
+const canvas = getCanvas();
+const ctx = getContext();
+appElement?.append(canvas);
 
-const BOARD_X = 100;
-const BOARD_Y = 60;
-const SIZE_RECT = 12;
+let grid = createBoard();
+let isRun = false;
 
-const boardSize = {
-    x: BOARD_X,
-    y: BOARD_Y,
+const animation = () => {
+    if (!isRun) {
+        return;
+    }
+
+    grid = boardUpdate(ctx, grid);
+    requestAnimationFrame(animation);
 };
 
-const datas = createBoard(boardSize);
-const rectes = createRectBoard(datas, SIZE_RECT);
+const startHandler = () => {
+    isRun = !isRun;
 
-const stage = new Konva.Stage({
-    container: "app",
-    width: BOARD_X * SIZE_RECT,
-    height: BOARD_Y * SIZE_RECT,
-});
+    if (!isRun) {
+        startElement.textContent = "start";
+        return;
+    }
 
-const layer = new Konva.Layer();
+    startElement.textContent = "stop";
+    animation();
+};
 
-layer.add(...rectes.flat());
-stage.add(layer);
-layer.drawScene();
+const randomHandler = () => {
+    grid = boardRandom(ctx);
+};
 
-// withWorker or withoutWorker in strategy
-const app = appStrategy(strategy.withoutWorker);
-app({ datas, rectes, boardSize, startElement, clearElement });
+const clearHandler = () => {
+    isRun = false;
+    grid = grid.map((row) => row.map(() => false));
+    drawBoard(ctx, grid);
+};
+
+const stepHandler = () => {
+    isRun = false;
+    grid = boardUpdate(ctx, grid);
+};
+
+let move = false;
+let modeLife: boolean;
+
+const mouseDownHandler = ({ offsetX, offsetY }: MouseEvent) => {
+    isRun = false;
+    move = true;
+
+    const colorPixel = [...ctx.getImageData(offsetX, offsetY, 1, 1).data];
+    modeLife = !isLife(rgbaToHex(colorPixel));
+
+    updateOnceCell(ctx, grid, { offsetX, offsetY, isLife: modeLife });
+};
+
+const mouseMoveHandler = ({ offsetX, offsetY }: MouseEvent) => {
+    if (!move) {
+        return;
+    }
+
+    updateOnceCell(ctx, grid, { offsetX, offsetY, isLife: modeLife });
+};
+
+const mouseUpHandler = () => {
+    move = false;
+};
+
+randomElement?.addEventListener("click", randomHandler);
+startElement.addEventListener("click", startHandler);
+clearElement.addEventListener("click", clearHandler);
+stepElement?.addEventListener("click", stepHandler);
+
+canvas.addEventListener("mousedown", mouseDownHandler);
+canvas.addEventListener("mousemove", mouseMoveHandler);
+canvas.addEventListener("mouseup", mouseUpHandler);
+
+drawBoard(ctx, grid);

@@ -1,13 +1,7 @@
-import type { Board, SizeBoard } from "../vite-env";
+import { maxCols, maxRows } from "../settings";
+import type { Board } from "../vite-env";
 
-export const getCountLifeBox = (
-    datas: Board,
-    i: number,
-    j: number,
-    boardSize: SizeBoard,
-) => {
-    const { x: maxCols, y: maxRows } = boardSize;
-
+export const getCountLifeBox = (datas: Board, i: number, j: number) => {
     return [
         i > 0 && j > 0 ? datas[i - 1][j - 1] : false,
         i > 0 ? datas[i - 1][j] : false,
